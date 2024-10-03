@@ -1,33 +1,25 @@
-# This imports the boto3 library, which is the AWS SDK for Py. It allows us to interact with various AWS services,
-# including S3
 import boto3
-# This imports the NoCredentialsError exception from the botocore lib, which is used to handle erros related to
-# missing AWS credentials
-from botocore.exceptions import NoCredentialsError
 
-ACCESS_KEY = ""
-SECRET_KEY = ""
-LOCAL_FILE = "pexels-frank-cone-140140-3250638.jpg"
-BUCKET_NAME = "uploadBucket"
-S3_FILE_NAME = "S3BucketUpload"
+AWS_ACCESS_key = ""
+AWS_SECRET_KEY = ""
+AWS_S3_BUCKET_NAME = "eagleimagebucket"
+AWS_REGION = "us-east-2"
+
+LOCAL_FILE = 'test_file.txt'
+NAME_FOR_S3 = 'test_file.txt'
 
 
-def upload_to_s3(local_file, bucket, s3_file):
-    # This function is responsible for uploading the file into the S3 bucket using the specified credentials
-    s3 = boto3.client(
-        "s3", aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY
+def main():
+    print('in main method')
+    s3_client = boto3.client(
+        service_name='s3',
+        region_name=AWS_REGION,
+        aws_access_key_id=AWS_ACCESS_key,
+        aws_secret_access_key=AWS_SECRET_KEY
     )
-    try: # This block attempts to upload the file to S3
-        # This method uploads the specified local file to the specified S3 bucket with the specified S3 file name.
-        s3.upload_file(local_file, bucket, s3_file)
-        print("Upload Successful")
-        return True
-    except FileNotFoundError: #This block catches the FileNotFoundError if the local file is not found
-        print("The file was not found")
-        return False
-    except NoCredentialsError: # The block catches the NoCredentialsError if the AWS credentials are not available
-        print("Credentials not available")
-        return False
+    response = s3_client.upload_file(LOCAL_FILE, AWS_S3_BUCKET_NAME, NAME_FOR_S3)
+    print(f'upload file response: {response}')
 
 
-result = upload_to_s3(LOCAL_FILE, BUCKET_NAME, S3_FILE_NAME)
+if __name__ == '__main__':
+    main()
